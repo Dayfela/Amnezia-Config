@@ -2,215 +2,316 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AMNEZIA VPN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Amnezia VPN - مولد کانفیگ AmneziaWG</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            user-select: none;
+            transition: background 0.3s ease, color 0.2s ease;
+        }
+
+        :root {
+            --bg-primary: #f0f4f8;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-glass: rgba(255, 255, 255, 0.85);
+            --text-primary: #1a2a3a;
+            --text-secondary: #4a627a;
+            --border-color: #d0dee8;
+            --accent-green: #2e7d32;
+            --accent-green-light: #4caf50;
+            --accent-bg: #e8f5e9;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --server-bg: #ffffff;
+            --server-hover: #e3f2fd;
+            --server-selected: #c8e6c9;
+            --junk-bg: #f8f9fa;
+            --textarea-bg: #fefefe;
+            --telegram-bg: #e1f5fe;
+        }
+
+        body.dark {
+            --bg-primary: #0a0f1a;
+            --bg-secondary: #0f1724;
+            --bg-card: #111a24;
+            --bg-glass: rgba(15, 25, 35, 0.85);
+            --text-primary: #eef2ff;
+            --text-secondary: #8aaec0;
+            --border-color: #2a4a3a;
+            --accent-green: #4caf50;
+            --accent-green-light: #69f0ae;
+            --accent-bg: #1a3a2a;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --server-bg: #111a24;
+            --server-hover: #1a2a3a;
+            --server-selected: #1a4a3a;
+            --junk-bg: #0e1622;
+            --textarea-bg: #0a0f1a;
+            --telegram-bg: #1a2d38;
         }
 
         body {
-            background: #0a0f1a;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            font-family: 'Segoe UI', 'Tahoma', 'Roboto', sans-serif;
             padding: 20px;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            color: var(--text-primary);
+        }
+
+        .theme-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 10px 18px;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-primary);
+            box-shadow: var(--shadow);
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             width: 100%;
-            background: #0f1724;
-            border-radius: 32px;
-            padding: 24px;
-            box-shadow: 0 20px 35px rgba(0,0,0,0.5);
-            border: 1px solid #2a3a44;
+            background: var(--bg-glass);
+            backdrop-filter: blur(12px);
+            border-radius: 42px;
+            padding: 28px 32px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
         }
 
-        h1 {
+        .header {
             text-align: center;
-            color: #4caf50;
-            font-size: 1.8rem;
-            margin-bottom: 5px;
+            margin-bottom: 28px;
+            border-bottom: 2px solid var(--accent-green);
+            padding-bottom: 18px;
         }
 
-        .sub {
-            text-align: center;
-            color: #8a9aa8;
-            font-size: 0.8rem;
-            margin-bottom: 20px;
+        .header h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, var(--accent-green-light), var(--accent-green));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .status {
-            background: #0e1622;
-            border-radius: 12px;
-            padding: 10px;
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 0.8rem;
-            color: #7ef0ba;
-            border: 1px solid #2a4a3a;
+        .badge {
+            background: var(--accent-bg);
+            border-radius: 60px;
+            padding: 6px 14px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
         }
 
-        .server-list {
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: var(--accent-bg);
+            padding: 12px 20px;
+            border-radius: 60px;
+            margin-bottom: 30px;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .online-badge {
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        .server-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 8px;
-            margin-bottom: 20px;
-            max-height: 280px;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 12px;
+            margin: 25px 0;
+            max-height: 380px;
             overflow-y: auto;
-            padding: 5px;
+            padding: 8px;
+            border-radius: 28px;
         }
 
-        .server-item {
-            background: #111a24;
-            border: 1px solid #2a3a44;
-            border-radius: 40px;
-            padding: 8px 15px;
+        .server-card {
+            background: var(--server-bg);
+            border-radius: 28px;
+            padding: 14px 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.2s ease;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
 
-        .server-item.selected {
-            background: #1a4a3a;
-            border-color: #4caf50;
+        .server-card:hover {
+            transform: translateY(-2px);
+            background: var(--server-hover);
+        }
+
+        .server-card.selected {
+            background: var(--server-selected);
+            border-color: var(--accent-green);
+            box-shadow: 0 0 12px var(--accent-green);
         }
 
         .server-ip {
             font-family: monospace;
-            font-size: 0.8rem;
-            color: #c0d4e8;
+            font-weight: 600;
+            font-size: 0.85rem;
+            direction: ltr;
         }
 
-        .check {
-            font-size: 1.1rem;
+        .check-icon {
+            font-size: 1.2rem;
+            font-weight: bold;
+            width: 28px;
+            text-align: center;
         }
 
         .junk-panel {
-            background: #0e1622;
-            border-radius: 20px;
-            padding: 15px;
-            margin-bottom: 20px;
-            border: 1px solid #2a4a3a;
+            background: var(--junk-bg);
+            border-radius: 28px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid var(--border-color);
         }
 
-        .junk-title {
-            font-weight: bold;
-            margin-bottom: 12px;
-            color: #4caf50;
-        }
-
-        .junk-controls {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .junk-controls label {
+        .section-title {
+            font-weight: 800;
+            margin-bottom: 18px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            font-size: 1.2rem;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 15px;
             font-size: 0.8rem;
-        }
-
-        .junk-controls input {
-            background: #1a2430;
-            border: 1px solid #3a5a6a;
-            border-radius: 30px;
-            padding: 6px 12px;
-            color: white;
-            width: 90px;
-        }
-
-        .output-area {
-            background: #0e1622;
-            border-radius: 20px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-
-        textarea {
-            width: 100%;
-            background: #0a0f1a;
-            border: 1px solid #2a5a4a;
-            border-radius: 16px;
-            padding: 12px;
-            color: #b0f0d0;
-            font-family: monospace;
-            font-size: 0.7rem;
-            resize: vertical;
-            direction: ltr;
+            color: var(--text-secondary);
         }
 
         .button-group {
             display: flex;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
         }
 
         button {
             flex: 1;
-            background: #2e7d32;
+            background: linear-gradient(95deg, var(--accent-green), var(--accent-green-light));
             border: none;
-            padding: 12px;
-            border-radius: 40px;
-            color: white;
-            font-weight: bold;
+            padding: 14px 20px;
+            border-radius: 60px;
             font-size: 1rem;
+            font-weight: bold;
+            color: white;
             cursor: pointer;
             transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         button:hover {
-            background: #1b5e20;
+            transform: translateY(-2px);
+            filter: brightness(1.05);
         }
 
         .copy-btn {
-            background: #2c5a4a;
+            background: linear-gradient(95deg, #2c5a4a, #3a8a6a);
         }
 
-        .copy-btn:hover {
-            background: #1e4a3a;
+        textarea {
+            width: 100%;
+            background: var(--textarea-bg);
+            border: 1px solid var(--accent-green);
+            border-radius: 20px;
+            padding: 16px;
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: var(--text-primary);
+            resize: vertical;
+            direction: ltr;
         }
 
         .telegram-box {
-            background: #1a2d38;
-            border-radius: 30px;
-            padding: 10px 20px;
+            background: var(--telegram-bg);
+            border-radius: 44px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
+            padding: 14px 24px;
+            margin-top: 20px;
+            gap: 16px;
+            border: 1px solid var(--border-color);
         }
 
-        .tg-btn {
+        .tg-link {
             background: #0088cc;
-            padding: 8px 18px;
-            border-radius: 40px;
+            padding: 10px 24px;
+            border-radius: 60px;
             text-decoration: none;
             color: white;
             font-weight: bold;
+            transition: 0.2s;
         }
 
-        .tg-btn:hover {
+        .tg-link:hover {
             background: #006699;
+            transform: scale(1.02);
         }
 
         .creator-name {
             text-align: center;
-            font-size: 0.7rem;
-            color: #6a8a9a;
-            margin-top: 15px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 18px;
+        }
+
+        .server-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .server-grid::-webkit-scrollbar-track {
+            background: var(--border-color);
+            border-radius: 10px;
+        }
+
+        .server-grid::-webkit-scrollbar-thumb {
+            background: var(--accent-green);
+            border-radius: 10px;
+        }
+
+        @media (max-width: 640px) {
+            .container { padding: 18px; }
+            .header h1 { font-size: 1.5rem; }
+            button { padding: 10px; font-size: 0.85rem; }
         }
 
         .copy-toast {
@@ -218,7 +319,7 @@
             bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            background: #4caf50;
+            background: var(--accent-green);
             color: white;
             padding: 10px 24px;
             border-radius: 40px;
@@ -236,27 +337,37 @@
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>🔐 AMNEZIA VPN</h1>
-    <div class="sub">CONFIG GENERATOR</div>
 
-    <div class="status">
-        🌐 تنظیمات پیشرفته AmneziaWG
+<button class="theme-switch" id="themeToggle">🌙 تم تاریک</button>
+
+<div class="container">
+    <div class="header">
+        <h1>🔐 AMNEZIA VPN <span class="badge">AmneziaWG ULTRA</span></h1>
+        <div class="creator-name">✨ Created by <strong>Dayfella</strong> ✨</div>
+        <div class="status-bar">
+            <span>🌐 لیست سرورهای فعال AmneziaWG</span>
+            <span class="online-badge">⚡ فوق پیشرفته | Junk Packets</span>
+        </div>
     </div>
 
-    <div class="server-list" id="serverList"></div>
+    <div class="server-grid" id="serverList"></div>
 
     <div class="junk-panel">
-        <div class="junk-title">📦 تنظیمات پکتها (Junk Packets)</div>
-        <div class="junk-controls">
-            <label>حداقل: <input type="number" id="junkMin" value="1" min="0" max="20"></label>
-            <label>حداکثر: <input type="number" id="junkMax" value="3" min="1" max="30"></label>
-            <label>سایز بسته: <input type="number" id="packetSize" value="64" min="16" max="1400"></label>
+        <div class="section-title">🧩 تنظیمات Junk Packets</div>
+        <div class="stats-row">
+            <span>📉 حداقل: <strong id="minJunkLabel">1</strong></span>
+            <span>📈 حداکثر: <strong id="maxJunkLabel">3</strong></span>
+            <span>📦 سایز بسته: <strong id="packetSizeLabel">64</strong> bytes</span>
+        </div>
+        <div class="button-group" style="margin-top: 10px;">
+            <input type="range" id="junkMinRange" min="0" max="35" value="1" step="1" style="flex:1">
+            <input type="range" id="junkMaxRange" min="1" max="55" value="3" step="1" style="flex:1">
+            <input type="range" id="packetSizeRange" min="16" max="1420" value="64" step="8" style="flex:1">
         </div>
     </div>
 
     <div class="output-area">
-        <textarea id="configOutput" rows="8" readonly></textarea>
+        <textarea id="configOutput" rows="10" readonly></textarea>
         <div class="button-group">
             <button id="generateBtn">⚡ ساخت کانفیگ</button>
             <button id="copyBtn" class="copy-btn">📋 کپی کانفیگ</button>
@@ -265,79 +376,53 @@
 
     <div class="telegram-box">
         <span>📢 عضویت در کانال تلگرام</span>
-        <a href="https://t.me/securety_vc" target="_blank" class="tg-btn">💠 @securety_vc</a>
-    </div>
-    <div class="creator-name">
-        ✨ Created by Dayfella ✨
+        <a href="https://t.me/securety_vc" target="_blank" class="tg-link">💠 @securety_vc</a>
     </div>
 </div>
 
 <div id="copyToast" class="copy-toast">✅ کانفیگ کپی شد!</div>
 
 <script>
-    // ========== لیست سرورها ==========
     const servers = [
-        "188.114.97.6:7281",
-        "8.6.112.224:8886",
-        "8.6.112.235:1070",
-        "8.6.112.228:1843",
-        "8.6.112.19:908",
-        "8.6.112.184:7281",
-        "8.6.112.51:2506",
-        "188.114.97.6:859",
-        "8.6.112.8:1014",
-        "8.6.112.253:854",
-        "8.6.112.221:500"
+        "188.114.97.6:7281", "8.6.112.224:8886", "8.6.112.235:1070", "8.6.112.228:1843",
+        "8.6.112.19:908", "8.6.112.184:7281", "8.6.112.51:2506", "188.114.97.6:859",
+        "8.6.112.8:1014", "8.6.112.253:854", "8.6.112.221:500", "185.239.241.26:8080",
+        "89.44.9.211:443", "45.87.153.135:51820", "194.60.207.111:7281", "91.92.244.48:8886",
+        "83.97.23.197:1070", "185.66.195.94:1843", "46.8.46.66:908", "178.20.114.66:7281"
     ];
 
     let selectedServer = servers[0];
 
-    // ========== کلیدهای واقعی ==========
     const REAL_PRIVATE_KEY = "qH83+rQ7j8yNdMACdLvk5EKRmRth5kDcVc1zS+24oV0=";
     const REAL_PUBLIC_KEY = "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=";
 
-    // ========== تولید هگز تصادفی ==========
     function randomHex(length) {
         let result = '';
         const hex = '0123456789abcdef';
-        for (let i = 0; i < length; i++) {
-            result += hex[Math.floor(Math.random() * 16)];
-        }
+        for (let i = 0; i < length; i++) result += hex[Math.floor(Math.random() * 16)];
         return result;
     }
 
-    // ========== ساخت کانفیگ ==========
     function generateConfig() {
         const [ip, port] = selectedServer.split(':');
-        const minJunk = parseInt(document.getElementById('junkMin').value) || 1;
-        const maxJunk = parseInt(document.getElementById('junkMax').value) || 3;
-        const packetBytes = parseInt(document.getElementById('packetSize').value) || 64;
+        const minJunk = parseInt(document.getElementById('junkMinRange').value);
+        const maxJunk = parseInt(document.getElementById('junkMaxRange').value);
+        const packetBytes = parseInt(document.getElementById('packetSizeRange').value);
         
         const junkCount = Math.floor(Math.random() * (maxJunk - minJunk + 1)) + minJunk;
-        
         let junkLines = '';
-        for (let i = 0; i < junkCount; i++) {
-            junkLines += `JunkPacket${i+1} = ${randomHex(packetBytes)}\n`;
-        }
+        for (let i = 0; i < junkCount; i++) junkLines += `JunkPacket${i+1} = ${randomHex(packetBytes)}\n`;
         
-        // آدرس IPv6 تصادفی
-        const ipv6Parts = [];
-        for (let i = 0; i < 8; i++) {
-            ipv6Parts.push(Math.floor(Math.random() * 65536).toString(16));
-        }
-        const ipv6 = ipv6Parts.join(':');
-        
-        // آدرس IPv4 تصادفی
+        const ipv6 = Array(8).fill().map(() => Math.floor(Math.random() * 65536).toString(16)).join(':');
         const ipv4 = `172.${Math.floor(Math.random() * 16) + 16}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 254) + 2}`;
         
-        // پارامترهای AmneziaWG
         const jc = Math.floor(Math.random() * 4) + 2;
         const jmin = Math.floor(Math.random() * 3) + 1;
         const jmax = jmin + Math.floor(Math.random() * 5) + 1;
         const s1 = Math.floor(Math.random() * 3);
         const s2 = Math.floor(Math.random() * 3);
         
-        const config = `# Generated AmneziaWG Config
+        return `# Generated AmneziaWG Config
 [Interface]
 PrivateKey = ${REAL_PRIVATE_KEY}
 Address = ${ipv4}/32, ${ipv6}/128
@@ -357,63 +442,53 @@ ${junkLines}
 PublicKey = ${REAL_PUBLIC_KEY}
 AllowedIPs = 0.0.0.0/0, ::/0
 Endpoint = ${ip}:${port}`;
-        
-        return config;
     }
 
-    // ========== رندر لیست سرورها ==========
     function renderServers() {
         const container = document.getElementById('serverList');
         container.innerHTML = '';
         servers.forEach(server => {
-            const div = document.createElement('div');
-            div.className = 'server-item';
-            if (selectedServer === server) div.classList.add('selected');
-            
-            div.innerHTML = `
-                <span class="check">${selectedServer === server ? '✓' : '○'}</span>
+            const card = document.createElement('div');
+            card.className = 'server-card' + (selectedServer === server ? ' selected' : '');
+            card.innerHTML = `
+                <span class="check-icon">${selectedServer === server ? '✅' : '○'}</span>
                 <span class="server-ip">${server}</span>
                 <span>🖥️</span>
             `;
-            
-            div.addEventListener('click', () => {
+            card.addEventListener('click', () => {
                 selectedServer = server;
                 renderServers();
                 document.getElementById('configOutput').value = generateConfig();
             });
-            
-            container.appendChild(div);
+            container.appendChild(card);
         });
     }
 
-    // ========== کپی در کلیپ‌بورد (روش جایگزین که در همه مرورگرها کار می‌کند) ==========
+    function updateLabels() {
+        document.getElementById('minJunkLabel').innerText = document.getElementById('junkMinRange').value;
+        document.getElementById('maxJunkLabel').innerText = document.getElementById('junkMaxRange').value;
+        document.getElementById('packetSizeLabel').innerText = document.getElementById('packetSizeRange').value;
+        
+        let minVal = parseInt(document.getElementById('junkMinRange').value);
+        let maxVal = parseInt(document.getElementById('junkMaxRange').value);
+        if (minVal > maxVal) document.getElementById('junkMaxRange').value = minVal;
+        document.getElementById('maxJunkLabel').innerText = document.getElementById('junkMaxRange').value;
+    }
+
     function copyToClipboard() {
         const textarea = document.getElementById('configOutput');
         const toast = document.getElementById('copyToast');
-        
-        // روش اول: انتخاب متن و کپی
         textarea.select();
         textarea.setSelectionRange(0, 999999);
-        
         try {
-            const success = document.execCommand('copy');
-            if (success) {
-                toast.textContent = '✅ کانفیگ کپی شد!';
+            if (document.execCommand('copy')) {
                 toast.classList.add('show');
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 2000);
-            } else {
-                throw new Error('execCommand failed');
-            }
-        } catch (err) {
-            // روش دوم: استفاده از Clipboard API (fallback)
+                setTimeout(() => toast.classList.remove('show'), 2000);
+            } else throw new Error();
+        } catch {
             navigator.clipboard.writeText(textarea.value).then(() => {
-                toast.textContent = '✅ کانفیگ کپی شد!';
                 toast.classList.add('show');
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 2000);
+                setTimeout(() => toast.classList.remove('show'), 2000);
             }).catch(() => {
                 toast.textContent = '❌ دستی کپی کن: Ctrl+C';
                 toast.classList.add('show');
@@ -423,25 +498,37 @@ Endpoint = ${ip}:${port}`;
                 }, 2500);
             });
         }
-        
-        // حذف انتخاب متن
         textarea.setSelectionRange(0, 0);
     }
 
-    // ========== رویدادها ==========
-    const generateBtn = document.getElementById('generateBtn');
-    const copyBtn = document.getElementById('copyBtn');
-    const output = document.getElementById('configOutput');
-    
-    generateBtn.addEventListener('click', () => {
-        output.value = generateConfig();
+    function initTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark');
+            document.getElementById('themeToggle').innerHTML = '☀️ تم روشن';
+        }
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle('dark');
+        const isDark = document.body.classList.contains('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        document.getElementById('themeToggle').innerHTML = isDark ? '☀️ تم روشن' : '🌙 تم تاریک';
+    }
+
+    document.getElementById('junkMinRange').addEventListener('input', updateLabels);
+    document.getElementById('junkMaxRange').addEventListener('input', updateLabels);
+    document.getElementById('packetSizeRange').addEventListener('input', updateLabels);
+    document.getElementById('generateBtn').addEventListener('click', () => {
+        document.getElementById('configOutput').value = generateConfig();
     });
-    
-    copyBtn.addEventListener('click', copyToClipboard);
-    
-    // مقداردهی اولیه
+    document.getElementById('copyBtn').addEventListener('click', copyToClipboard);
+    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
     renderServers();
-    output.value = generateConfig();
+    updateLabels();
+    initTheme();
+    document.getElementById('configOutput').value = generateConfig();
 </script>
 </body>
 </html>
