@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMNEZIA VPN</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: #0a0f1a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: #0f1724;
+            border-radius: 32px;
+            padding: 24px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.5);
+            border: 1px solid #2a3a44;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4caf50;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .sub {
+            text-align: center;
+            color: #8a9aa8;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+        }
+
+        .status {
+            background: #0e1622;
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 0.8rem;
+            color: #7ef0ba;
+            border: 1px solid #2a4a3a;
+        }
+
+        .server-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 8px;
+            margin-bottom: 20px;
+            max-height: 280px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        .server-item {
+            background: #111a24;
+            border: 1px solid #2a3a44;
+            border-radius: 40px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .server-item.selected {
+            background: #1a4a3a;
+            border-color: #4caf50;
+        }
+
+        .server-ip {
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #c0d4e8;
+        }
+
+        .check {
+            font-size: 1.1rem;
+        }
+
+        .junk-panel {
+            background: #0e1622;
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #2a4a3a;
+        }
+
+        .junk-title {
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #4caf50;
+        }
+
+        .junk-controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .junk-controls label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+        }
+
+        .junk-controls input {
+            background: #1a2430;
+            border: 1px solid #3a5a6a;
+            border-radius: 30px;
+            padding: 6px 12px;
+            color: white;
+            width: 90px;
+        }
+
+        .output-area {
+            background: #0e1622;
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        textarea {
+            width: 100%;
+            background: #0a0f1a;
+            border: 1px solid #2a5a4a;
+            border-radius: 16px;
+            padding: 12px;
+            color: #b0f0d0;
+            font-family: monospace;
+            font-size: 0.7rem;
+            resize: vertical;
+            direction: ltr;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            flex: 1;
+            background: #2e7d32;
+            border: none;
+            padding: 12px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #1b5e20;
+        }
+
+        .copy-btn {
+            background: #2c5a4a;
+        }
+
+        .copy-btn:hover {
+            background: #1e4a3a;
+        }
+
+        .telegram-box {
+            background: #1a2d38;
+            border-radius: 30px;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .tg-btn {
+            background: #0088cc;
+            padding: 8px 18px;
+            border-radius: 40px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+        }
+
+        .tg-btn:hover {
+            background: #006699;
+        }
+
+        .creator-name {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #6a8a9a;
+            margin-top: 15px;
+        }
+
+        .copy-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4caf50;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: 0.3s;
+            pointer-events: none;
+            z-index: 1000;
+            font-weight: bold;
+        }
+
+        .copy-toast.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔐 AMNEZIA VPN</h1>
+    <div class="sub">CONFIG GENERATOR</div>
+
+    <div class="status">
+        🌐 تنظیمات پیشرفته AmneziaWG
+    </div>
+
+    <div class="server-list" id="serverList"></div>
+
+    <div class="junk-panel">
+        <div class="junk-title">📦 تنظیمات پکتها (Junk Packets)</div>
+        <div class="junk-controls">
+            <label>حداقل: <input type="number" id="junkMin" value="1" min="0" max="20"></label>
+            <label>حداکثر: <input type="number" id="junkMax" value="3" min="1" max="30"></label>
+            <label>سایز بسته: <input type="number" id="packetSize" value="64" min="16" max="1400"></label>
+        </div>
+    </div>
+
+    <div class="output-area">
+        <textarea id="configOutput" rows="8" readonly></textarea>
+        <div class="button-group">
+            <button id="generateBtn">⚡ ساخت کانفیگ</button>
+            <button id="copyBtn" class="copy-btn">📋 کپی کانفیگ</button>
+        </div>
+    </div>
+
+    <div class="telegram-box">
+        <span>📢 عضویت در کانال تلگرام</span>
+        <a href="https://t.me/securety_vc" target="_blank" class="tg-btn">💠 @securety_vc</a>
+    </div>
+    <div class="creator-name">
+        ✨ Created by Dayfella ✨
+    </div>
+</div>
+
+<div id="copyToast" class="copy-toast">✅ کانفیگ کپی شد!</div>
+
+<script>
+    // ========== لیست سرورها ==========
+    const servers = [
+        "188.114.97.6:7281",
+        "8.6.112.224:8886",
+        "8.6.112.235:1070",
+        "8.6.112.228:1843",
+        "8.6.112.19:908",
+        "8.6.112.184:7281",
+        "8.6.112.51:2506",
+        "188.114.97.6:859",
+        "8.6.112.8:1014",
+        "8.6.112.253:854",
+        "8.6.112.221:500"
+    ];
+
+    let selectedServer = servers[0];
+
+    // ========== کلیدهای واقعی ==========
+    const REAL_PRIVATE_KEY = "qH83+rQ7j8yNdMACdLvk5EKRmRth5kDcVc1zS+24oV0=";
+    const REAL_PUBLIC_KEY = "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=";
+
+    // ========== تولید هگز تصادفی ==========
+    function randomHex(length) {
+        let result = '';
+        const hex = '0123456789abcdef';
+        for (let i = 0; i < length; i++) {
+            result += hex[Math.floor(Math.random() * 16)];
+        }
+        return result;
+    }
+
+    // ========== ساخت کانفیگ ==========
+    function generateConfig() {
+        const [ip, port] = selectedServer.split(':');
+        const minJunk = parseInt(document.getElementById('junkMin').value) || 1;
+        const maxJunk = parseInt(document.getElementById('junkMax').value) || 3;
+        const packetBytes = parseInt(document.getElementById('packetSize').value) || 64;
+        
+        const junkCount = Math.floor(Math.random() * (maxJunk - minJunk + 1)) + minJunk;
+        
+        let junkLines = '';
+        for (let i = 0; i < junkCount; i++) {
+            junkLines += `JunkPacket${i+1} = ${randomHex(packetBytes)}\n`;
+        }
+        
+        // آدرس IPv6 تصادفی
+        const ipv6Parts = [];
+        for (let i = 0; i < 8; i++) {
+            ipv6Parts.push(Math.floor(Math.random() * 65536).toString(16));
+        }
+        const ipv6 = ipv6Parts.join(':');
+        
+        // آدرس IPv4 تصادفی
+        const ipv4 = `172.${Math.floor(Math.random() * 16) + 16}.${Math.floor(Math.random() * 256)}.${Math.floor(Math.random() * 254) + 2}`;
+        
+        // پارامترهای AmneziaWG
+        const jc = Math.floor(Math.random() * 4) + 2;
+        const jmin = Math.floor(Math.random() * 3) + 1;
+        const jmax = jmin + Math.floor(Math.random() * 5) + 1;
+        const s1 = Math.floor(Math.random() * 3);
+        const s2 = Math.floor(Math.random() * 3);
+        
+        const config = `# Generated AmneziaWG Config
+[Interface]
+PrivateKey = ${REAL_PRIVATE_KEY}
+Address = ${ipv4}/32, ${ipv6}/128
+DNS = 1.1.1.1, 1.0.0.1, 2606:4700:4700::1111, 2606:4700:4700::1001
+MTU = 1280
+Jc = ${jc}
+Jmin = ${jmin}
+Jmax = ${jmax}
+S1 = ${s1}
+S2 = ${s2}
+H1 = 1
+H2 = 2
+H3 = 3
+H4 = 4
+${junkLines}
+[Peer]
+PublicKey = ${REAL_PUBLIC_KEY}
+AllowedIPs = 0.0.0.0/0, ::/0
+Endpoint = ${ip}:${port}`;
+        
+        return config;
+    }
+
+    // ========== رندر لیست سرورها ==========
+    function renderServers() {
+        const container = document.getElementById('serverList');
+        container.innerHTML = '';
+        servers.forEach(server => {
+            const div = document.createElement('div');
+            div.className = 'server-item';
+            if (selectedServer === server) div.classList.add('selected');
+            
+            div.innerHTML = `
+                <span class="check">${selectedServer === server ? '✓' : '○'}</span>
+                <span class="server-ip">${server}</span>
+                <span>🖥️</span>
+            `;
+            
+            div.addEventListener('click', () => {
+                selectedServer = server;
+                renderServers();
+                document.getElementById('configOutput').value = generateConfig();
+            });
+            
+            container.appendChild(div);
+        });
+    }
+
+    // ========== کپی در کلیپ‌بورد (روش جایگزین که در همه مرورگرها کار می‌کند) ==========
+    function copyToClipboard() {
+        const textarea = document.getElementById('configOutput');
+        const toast = document.getElementById('copyToast');
+        
+        // روش اول: انتخاب متن و کپی
+        textarea.select();
+        textarea.setSelectionRange(0, 999999);
+        
+        try {
+            const success = document.execCommand('copy');
+            if (success) {
+                toast.textContent = '✅ کانفیگ کپی شد!';
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            } else {
+                throw new Error('execCommand failed');
+            }
+        } catch (err) {
+            // روش دوم: استفاده از Clipboard API (fallback)
+            navigator.clipboard.writeText(textarea.value).then(() => {
+                toast.textContent = '✅ کانفیگ کپی شد!';
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            }).catch(() => {
+                toast.textContent = '❌ دستی کپی کن: Ctrl+C';
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    toast.textContent = '✅ کانفیگ کپی شد!';
+                }, 2500);
+            });
+        }
+        
+        // حذف انتخاب متن
+        textarea.setSelectionRange(0, 0);
+    }
+
+    // ========== رویدادها ==========
+    const generateBtn = document.getElementById('generateBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const output = document.getElementById('configOutput');
+    
+    generateBtn.addEventListener('click', () => {
+        output.value = generateConfig();
+    });
+    
+    copyBtn.addEventListener('click', copyToClipboard);
+    
+    // مقداردهی اولیه
+    renderServers();
+    output.value = generateConfig();
+</script>
+</body>
+</html>
